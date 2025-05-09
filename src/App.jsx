@@ -1,32 +1,19 @@
 import { useState } from "react";
 import HomePage from "./pages/Home/Home";
 import "./App.css";
+import Navigation from "./pages/Navigation/Navigation";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LoginPage from "./pages/Login/loginPage";
 import RegistrationPage from "./pages/Registration/registrationPage";
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <HomePage />,
-  },
-  {
-    path: "/loginpage",
-    element: <LoginPage />,
-  },
-  {
-    path: "/registrationpage",
-    element: <RegistrationPage />,
-  },
-]);
+import { BrowserRouter } from "react-router-dom";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <div>
-      <RouterProvider router={router} />
-    </div>
+    <BrowserRouter>
+      <Navigation></Navigation>
+    </BrowserRouter>
   );
 }
 
