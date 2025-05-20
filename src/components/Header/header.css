@@ -1,0 +1,42 @@
+.header-wrapper {
+  width: 100%;
+  /* background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+
+  /* margin: 0 auto; */
+
+}
+
+.header {
+    background-color: #faf7f3;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+     max-width: 1343px;
+    margin: 0 auto;
+    padding: 1px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.menu {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  background: transparent;
+  border-bottom: none;
+}
+
+.flex-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+body {
+  margin: 0;
+  padding-top: 80px; /* щоб компенсувати фіксований хедер */
+}
