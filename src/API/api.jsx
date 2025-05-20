@@ -21,3 +21,16 @@ export const login_request = async ({ email, password }, callback) => {
       }
     });
 };
+
+export const save_session_request = async (commands) => {
+  debugger;
+  try {
+    const response = await axios.post(`${ItemsBaseURL}/sessions/create`, {
+      // date: date,
+      commands: commands,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

@@ -3,7 +3,7 @@ import { AppstoreOutlined, HomeOutlined } from "@ant-design/icons";
 import { Menu, Button, Flex } from "antd";
 import { Link } from "react-router-dom";
 
-import "./Header.css";
+import "./header.css";
 
 const items = [
   {
@@ -25,29 +25,31 @@ const Header = ({ setAuth }) => {
     setCurrent(e.key);
   };
   return (
-    <div className="header">
-      <div>
-        <h2>GPS Tracker</h2>
+    <div className="header-wrapper">
+      <div className="header">
+        <div className="proj_name">
+          <h2>Deminer manager</h2>
+        </div>
+        <Menu
+          className="menu"
+          onClick={onClick}
+          selectedKeys={[current]}
+          mode="horizontal"
+          items={items}
+        />
+        <Flex align="center" gap="small">
+          <h4>{localStorage.getItem("login").username}</h4>
+          <Button
+            type="primary"
+            onClick={() => {
+              setAuth(null);
+              localStorage.removeItem("login");
+            }}
+          >
+            Log out
+          </Button>
+        </Flex>
       </div>
-      <Menu
-        className="menu"
-        onClick={onClick}
-        selectedKeys={[current]}
-        mode="horizontal"
-        items={items}
-      />
-      <Flex align="center" gap="small">
-        <h4>{JSON.parse(localStorage.getItem("login")).username}</h4>
-        <Button
-          type="primary"
-          onClick={() => {
-            setAuth(null);
-            localStorage.setItem("login", null);
-          }}
-        >
-          Log out
-        </Button>
-      </Flex>
     </div>
   );
 };
