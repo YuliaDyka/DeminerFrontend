@@ -3,6 +3,7 @@
     border-radius: 20px;
     padding: 10px 20px;
     height: auto;
+    width: 80%;
 }
 .page-container2{
   margin: 0 auto;
@@ -34,11 +35,15 @@
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.btn-send{
+    margin-top: 25px;
+}
+
 .input-box{
 
     display: flex;
     justify-content: space-between;
-    width: 69%;
+    width: 89%;
 
 }
  .commands-app {
