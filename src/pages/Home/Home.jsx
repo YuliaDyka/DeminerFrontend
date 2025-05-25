@@ -1,4 +1,4 @@
-import { number } from "yup";
+import { number, string } from "yup";
 import "./Home.css";
 import React, { useState, useEffect } from "react";
 import { Button, Flex } from "antd";
@@ -10,7 +10,6 @@ import {
   get_all_sessions,
   save_session_request,
   delete_request,
-  update_session_request,
   update_commands_request,
   save_commands_request,
   getSession_by_id,
@@ -32,6 +31,10 @@ const HomePage = () => {
 
   const [selectedSession, setSelectedSession] = useState(null);
 
+  const [formDataName, setFormDataName] = useState({
+    name: string,
+  });
+
   const [formData, setFormData] = useState({
     id: 0,
     index: index,
@@ -41,7 +44,16 @@ const HomePage = () => {
     distance: 0,
   });
 
+  function isEmptyFormData() {
+    let isDurationDistance = formData.duration === 0 && formData.distance === 0;
+    let result = formData.speed?.length === 0 || !formData.angle?.length === 0;
+    return result || isDurationDistance || formDataName.name?.length === 0;
+  }
+
   const setActionCommands = (e) => {
+    if (isEmptyFormData()) {
+      return;
+    }
     if (selectedSession) {
       setIsUpdate(false);
       formData.session_id = selectedSession.id;
@@ -68,7 +80,7 @@ const HomePage = () => {
     } else {
       setCommands([...commands, { ...formData }]);
 
-      save_session_request([formData])
+      save_session_request(formDataName.name, [formData])
         .then((result) => {
           alert(result);
           setSelectedSession(result);
@@ -150,6 +162,10 @@ const HomePage = () => {
     let value = e.target.value == "" ? null : e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
   };
+  const handleNameChange = (e) => {
+    let value = e.target.value == "" ? null : e.target.value;
+    setFormDataName({ ...formDataName, [e.target.name]: value });
+  };
 
   function getSessions() {
     get_all_sessions()
@@ -223,11 +239,30 @@ const HomePage = () => {
 
   return (
     <div className="page-container2">
-      <button onClick={() => setStarted(true)} className="send_button">
-        Connect
-      </button>
+      <div className="header-box">
+        <button
+          onClick={() => setStarted(true)}
+          className="send_button connect_btn"
+        >
+          Connect
+        </button>
+        <div hidden={selectedSession} className="input-box">
+          <div className="input-item">
+            <label hidden={selectedSession}>New Session Name</label>
+            <input
+              hidden={selectedSession}
+              placeholder="Session name.."
+              type="text"
+              name="name"
+              value={formDataName.name}
+              onChange={handleNameChange}
+            ></input>
+          </div>
+        </div>
+      </div>
+
+      <div hidden={selectedSession} style={{ padding: 5 }}></div>
       <div className="container-main">
-        <div></div>
         <div>
           <div className="input-box">
             <div className="input-item">
@@ -283,6 +318,7 @@ const HomePage = () => {
 
             <Flex align="center" gap="small">
               <Button
+                disabled={isEmptyFormData()}
                 className="btn-send"
                 type="primary"
                 onClick={() => {
@@ -326,11 +362,10 @@ const HomePage = () => {
               setSelectedSession(null);
               setIndex(10);
               formData.index = 10;
+              formDataName.name = "";
             }
           }}
-          getOptionLabel={(option) =>
-            Moment(option.date).format("YYYY-MM-DD  HH:mm")
-          }
+          getOptionLabel={(option) => option.name}
           renderInput={(params) => (
             <TextField {...params} label="Select Session" variant="outlined" />
           )}
