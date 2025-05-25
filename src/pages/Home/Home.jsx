@@ -1,19 +1,27 @@
-import { number, string } from "yup";
+import { number } from "yup";
 import "./Home.css";
 import React, { useState, useEffect } from "react";
-import { Menu, Button, Flex } from "antd";
+import { Button, Flex } from "antd";
 import DataTable from "react-data-table-component";
 import { Autocomplete, TextField } from "@mui/material";
 import Moment from "moment";
 
-import { get_all_sessions, save_session_request } from "../../API/api";
+import {
+  get_all_sessions,
+  save_session_request,
+  delete_request,
+  update_session_request,
+  update_commands_request,
+  save_commands_request,
+  getSession_by_id,
+} from "../../API/api";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const HomePage = () => {
   const [started, setStarted] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
   const [commands, setCommands] = useState([]);
-  const mappedArray = [...commands];
-  mappedArray.map((x) => x * x).sort();
+
   const [index, setIndex] = useState(10);
 
   const [sessions, setSessions] = useState([]);
@@ -34,14 +42,47 @@ const HomePage = () => {
   });
 
   const setActionCommands = (e) => {
-    formData.id = 0;
+    if (selectedSession) {
+      setIsUpdate(false);
+      formData.session_id = selectedSession.id;
+      if (formData.id != 0) {
+        update_commands_request(e.id, formData)
+          .then((response) => {
+            alert(response);
 
-    setCommands([...commands, { ...formData }]);
+            getSessionById(selectedSession.id);
+          })
+          .catch((error) => {
+            console.log("no server response ", error);
+          });
+      } else {
+        save_commands_request(formData)
+          .then((response) => {
+            alert(response);
+            getSessionById(selectedSession.id);
+          })
+          .catch((error) => {
+            console.log("no server response ", error);
+          });
+      }
+    } else {
+      setCommands([...commands, { ...formData }]);
+
+      save_session_request([formData])
+        .then((result) => {
+          alert(result);
+          setSelectedSession(result);
+          getSessionById(result.id);
+        })
+        .catch((error) => {
+          console.log("no server response ", error);
+        });
+    }
+  };
+  function setDefaultFormData(displayCommands) {
     let i = index;
-
-    if (commands?.length !== 0) {
-      let clone = commands.slice(0);
-      clone.push(formData);
+    if (displayCommands?.length !== 0) {
+      let clone = displayCommands.slice(0);
       clone.forEach((c) => {
         c.index = Number(c.index);
       });
@@ -57,31 +98,52 @@ const HomePage = () => {
     formData.angle = "";
     formData.distance = 0;
     formData.duration = 0;
-  };
+  }
 
   const clickSaveSession = (e) => {
-    save_session_request(commands, (response) => {
-      console.log(response);
-    });
+    save_session_request(commands)
+      .then((result) => {
+        alert(result);
+
+        getSessionById(selectedSession.id);
+      })
+      .catch((error) => {
+        console.log("no server response ", error);
+      });
   };
+
   const deleteCommandById = (e) => {
-    if (selectedSession === null) {
-      let filters = commands.filter(function (com) {
-        return com.index !== e.index;
-      });
+    let filters = commands.filter(function (com) {
+      return com.index !== e.index;
+    });
 
-      const clone = commands.slice(0);
-      clone.forEach((c) => {
-        c.index = Number(c.index);
-      });
-      let sortCommands = clone.sort((a, b) => b.index - a.index);
+    const clone = filters.slice(0);
+    clone.forEach((c) => {
+      c.index = Number(c.index);
+    });
+    let sortCommands = clone.sort((a, b) => b.index - a.index);
 
-      let i = sortCommands[0].index + 10;
-      setIndex(i);
-      formData.index = i;
-      setCommands(commands.filter((c) => c.index !== e.index));
-    } else {
+    let i = sortCommands[0].index + 10;
+    setIndex(i);
+
+    formData.index = i;
+    setCommands(filters);
+    if (selectedSession != null) {
+      delete_request(e.id)
+        .then((result) => {
+          alert(result);
+        })
+        .catch((error) => {
+          console.log("no server response ", error);
+        });
     }
+  };
+
+  const handleUpdate = (e) => {
+    if (selectedSession) {
+      setIsUpdate(false);
+    }
+    setFormData(e);
   };
 
   const handleChange = (e) => {
@@ -94,6 +156,20 @@ const HomePage = () => {
       .then((result) => {
         setSessions(result);
         console.log(result);
+      })
+      .catch((error) => {
+        console.log("no server response ", error);
+        setSessions([]);
+      });
+  }
+
+  function getSessionById(session_id) {
+    getSession_by_id(session_id)
+      .then((result) => {
+        let sortCommands = result.commands.sort((a, b) => a.index - b.index);
+
+        setCommands([...sortCommands]);
+        setDefaultFormData(result.commands);
       })
       .catch((error) => {
         console.log("no server response ", error);
@@ -127,7 +203,11 @@ const HomePage = () => {
       name: "Action",
       cell: (row) => (
         <div className="action_btn">
-          <button onClick={() => handleUpdate(row)} style={{ color: "blue" }}>
+          <button
+            hidden={!selectedSession}
+            onClick={() => handleUpdate(row)}
+            style={{ color: "blue" }}
+          >
             Update
           </button>
           <button
@@ -222,20 +302,30 @@ const HomePage = () => {
           value={selectedSession}
           onChange={(event, newValue) => {
             if (newValue !== null) {
-              const clone = newValue.commands.slice(0);
+              setSelectedSession(newValue);
+
+              const clone = newValue.commands?.slice(0);
               clone.forEach((c) => {
                 c.index = Number(c.index);
               });
               let sortCommands = clone.sort((a, b) => a.index - b.index);
 
               setCommands([...sortCommands]);
-              setSelectedSession(newValue);
-              let i = sortCommands[0].index + 10;
-              setIndex(i);
-              formData.index = i;
+
+              let i = sortCommands[sortCommands?.length - 1]?.index + 10;
+
+              if (sortCommands?.length != 0) {
+                setIndex(i);
+                formData.index = i;
+              } else {
+                setIndex(10);
+                formData.index = 10;
+              }
             } else {
               setCommands([]);
               setSelectedSession(null);
+              setIndex(10);
+              formData.index = 10;
             }
           }}
           getOptionLabel={(option) =>
@@ -249,20 +339,32 @@ const HomePage = () => {
       </div>
 
       <div className=" commands-app">
-        <DataTable
-          title="Commands"
-          columns={columns}
-          data={commands}
-          fixedHeader
-          pagination
-        />
+        {selectedSession && commands?.length != 0 ? (
+          <DataTable
+            title="Saved Commands"
+            columns={columns}
+            data={commands}
+            fixedHeader
+            pagination
+          />
+        ) : (
+          <DataTable
+            title="New Commands"
+            columns={columns}
+            data={commands}
+            fixedHeader
+            pagination
+          />
+        )}
       </div>
+
       <button
+        hidden={selectedSession}
         disabled={commands?.length === 0}
         className="send_button"
         onClick={() => clickSaveSession()}
       >
-        Save
+        Save new commands
       </button>
     </div>
   );
