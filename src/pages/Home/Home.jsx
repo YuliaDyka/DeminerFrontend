@@ -17,8 +17,7 @@ import {
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const HomePage = () => {
-  const [started, setStarted] = useState(false);
-  const [isUpdate, setIsUpdate] = useState(false);
+  const [connect, setConnect] = useState(false);
   const [commands, setCommands] = useState([]);
 
   const [index, setIndex] = useState(10);
@@ -44,10 +43,46 @@ const HomePage = () => {
     distance: 0,
   });
 
+  const [active, setActive] = useState();
+  const [timer, setTimer] = useState();
+  const [defaultIndexes, setDefaultIndexes] = useState([]);
+  const [timerIndex, setTimerIndex] = useState();
+
+  const toggleTimer = () => {
+    if (timer) {
+      clearInterval(timer);
+      setTimer(undefined);
+      setActive(false);
+      setTimerIndex(null);
+    } else {
+      setActive(true);
+
+      let counter = 0;
+      let index = defaultIndexes[counter];
+      setTimerIndex(index);
+
+      const timerId = setInterval(() => {
+        index = defaultIndexes[counter];
+        setTimerIndex(index);
+        if (counter === defaultIndexes?.length - 1) {
+          counter = 0;
+        } else {
+          counter++;
+        }
+      }, 1000);
+      setTimer(timerId);
+    }
+  };
+
   function isEmptyFormData() {
     let isDurationDistance = formData.duration === 0 && formData.distance === 0;
     let result = formData.speed?.length === 0 || !formData.angle?.length === 0;
-    return result || isDurationDistance || formDataName.name?.length === 0;
+
+    return (
+      result ||
+      isDurationDistance ||
+      (!selectedSession && formDataName.name?.length === 0)
+    );
   }
 
   const setActionCommands = (e) => {
@@ -55,7 +90,6 @@ const HomePage = () => {
       return;
     }
     if (selectedSession) {
-      setIsUpdate(false);
       formData.session_id = selectedSession.id;
       if (formData.id != 0) {
         update_commands_request(e.id, formData)
@@ -112,18 +146,6 @@ const HomePage = () => {
     formData.duration = 0;
   }
 
-  const clickSaveSession = (e) => {
-    save_session_request(commands)
-      .then((result) => {
-        alert(result);
-
-        getSessionById(selectedSession.id);
-      })
-      .catch((error) => {
-        console.log("no server response ", error);
-      });
-  };
-
   const deleteCommandById = (e) => {
     let filters = commands.filter(function (com) {
       return com.index !== e.index;
@@ -171,7 +193,6 @@ const HomePage = () => {
     get_all_sessions()
       .then((result) => {
         setSessions(result);
-        console.log(result);
       })
       .catch((error) => {
         console.log("no server response ", error);
@@ -237,11 +258,21 @@ const HomePage = () => {
     },
   ];
 
+  const conditionalRowStyles = [
+    {
+      when: (row) => row.index === timerIndex,
+      style: {
+        backgroundColor: "green",
+        userSelect: "none",
+      },
+    },
+  ];
+
   return (
     <div className="page-container2">
       <div className="header-box">
         <button
-          onClick={() => setStarted(true)}
+          onClick={() => setConnected(true)}
           className="send_button connect_btn"
         >
           Connect
@@ -347,6 +378,7 @@ const HomePage = () => {
               let sortCommands = clone.sort((a, b) => a.index - b.index);
 
               setCommands([...sortCommands]);
+              setDefaultIndexes(sortCommands.map((c) => c.index));
 
               let i = sortCommands[sortCommands?.length - 1]?.index + 10;
 
@@ -358,9 +390,11 @@ const HomePage = () => {
                 formData.index = 10;
               }
             } else {
+              getSessions();
               setCommands([]);
               setSelectedSession(null);
               setIndex(10);
+              setDefaultIndexes([]);
               formData.index = 10;
               formDataName.name = "";
             }
@@ -381,6 +415,7 @@ const HomePage = () => {
             data={commands}
             fixedHeader
             pagination
+            conditionalRowStyles={conditionalRowStyles}
           />
         ) : (
           <DataTable
@@ -394,13 +429,13 @@ const HomePage = () => {
       </div>
 
       <button
-        hidden={selectedSession}
-        disabled={commands?.length === 0}
+        hidden={!selectedSession}
         className="send_button"
-        onClick={() => clickSaveSession()}
+        onClick={toggleTimer}
       >
-        Save new commands
+        {timer ? "Stop move" : "Start move"}
       </button>
+      {active ? `${timerIndex}` + " active" : "not-active"}
     </div>
   );
 };
