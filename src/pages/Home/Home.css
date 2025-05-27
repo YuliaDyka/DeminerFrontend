@@ -1,19 +1,28 @@
-.container-main{
-    border: 1px solid rgb(34, 104, 37);
-    border-radius: 20px;
-    padding: 10px 20px;
-    height: auto;
-    width: 80%;
+.container-main {
+  border: 1px solid rgb(34, 104, 37);
+  border-radius: 20px;
+  padding: 10px 20px;
+  height: auto;
+  width: 80%;
 }
-.page-container2{
+.page-container2 {
   margin: 0 auto;
   margin: 0 auto;
-    padding: 10px 20px;
+  padding: 10px 20px;
 
-    .ss{
-       padding: 0 0 0 50px;
-       margin-top: -10px; 
-    }
+  .ss {
+    padding: 0 0 0 50px;
+    margin-top: -10px;
+  }
+}
+
+.header-box {
+  display: flex;
+  flex-direction: row;
+  align-items: self-end;
+  .connect_btn {
+    margin-right: 40px;
+  }
 }
 
 .send_button {
@@ -35,52 +44,50 @@
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-.btn-send{
-    margin-top: 25px;
+.btn-send {
+  margin-top: 25px;
 }
 
-.input-box{
-
-    display: flex;
-    justify-content: space-between;
-    width: 89%;
-
+.input-box {
+  display: flex;
+  justify-content: space-between;
+  width: 89%;
 }
- .commands-app {
+.commands-app {
   width: 50%;
-    padding: 20px 10px 10px 0;
- }
- .input-item {
-      display: flex;
-    flex-direction: column;
-    width: 14%;
-        input{
-          padding: 6px 10px;
-          border: 1px solid #ccc;
-          border-radius: 6px;
-          font-size: 1em;
-          background-color: #fafafa;
-        }
-        label{
-          margin-bottom: 4px;
-          font-weight: 500;
-        }
-    }
-
-.send_cont{
-    input{
-        margin-right: 40px;
-        font-family: inherit;
-        height: 25px;
-        background-color: #faf7f3;
-        border-width:0.14em;
-    }
+  padding: 20px 10px 10px 0;
+}
+.input-item {
+  display: flex;
+  flex-direction: column;
+  width: 14%;
+  input {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    background-color: #fafafa;
+  }
+  label {
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
 }
 
-.g{
-    text-align: left;
-    margin-left: 2px;
-    margin-bottom: 15px;
+.send_cont {
+  input {
+    margin-right: 40px;
+    font-family: inherit;
+    height: 25px;
+    background-color: #faf7f3;
+    border-width: 0.14em;
+  }
+}
+
+.g {
+  text-align: left;
+  margin-left: 2px;
+  margin-bottom: 15px;
 }
 
 .submitted-container {
@@ -101,15 +108,15 @@
   background-color: #f5f5f5;
   cursor: pointer;
   border: 1px solid #ccc;
-      height: 20%;
-margin: 6px 10px;
+  height: 20%;
+  margin: 6px 10px;
 }
 
-.action_btn{
+.action_btn {
   margin: -30px;
   display: flex;
   justify-content: space-between;
-  button{
+  button {
     margin-left: 5px;
   }
 }

@@ -22,9 +22,10 @@ export const login_request = async ({ email, password }, callback) => {
     });
 };
 
-export const save_session_request = async (commands) => {
+export const save_session_request = async (nameSession, commands) => {
   try {
     const response = await axios.post(`${ItemsBaseURL}/sessions/create`, {
+      nameSession: nameSession,
       commands: commands,
     });
     return response.data;
