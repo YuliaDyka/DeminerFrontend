@@ -54,7 +54,7 @@
   width: 89%;
 }
 .commands-app {
-  width: 50%;
+  width: 55%;
   padding: 20px 10px 10px 0;
 }
 .input-item {
@@ -113,10 +113,10 @@
 }
 
 .action_btn {
-  margin: -30px;
+  margin: -41px;
   display: flex;
   justify-content: space-between;
   button {
-    margin-left: 5px;
+    margin-left: 3px;
   }
 }
