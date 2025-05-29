@@ -27,7 +27,7 @@ const LoginPage = ({ setAuth }) => {
         >
           {({ errors, touched }) => (
             <Form>
-              <div className="input">
+              <div className="input_log">
                 <div>
                   <Field name="email" id="email" placeholder="Email" />
                   {errors.email && touched.email ? (
