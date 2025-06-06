@@ -5,6 +5,8 @@ import { Button, Flex } from "antd";
 import DataTable from "react-data-table-component";
 import { Autocomplete, TextField } from "@mui/material";
 import Moment from "moment";
+import tmpImage from "../../assets/E109J2SK.avif";
+import tmpImage2 from "../../assets/E102H5XM.avif";
 
 import {
   get_all_sessions,
@@ -214,6 +216,11 @@ const HomePage = () => {
       });
   }
 
+  const handleMove = (direction) => {
+    console.log("Move:", direction);
+    // Додай тут свою логіку руху
+  };
+
   const columns = [
     {
       name: "Index",
@@ -407,35 +414,73 @@ const HomePage = () => {
         />
       </div>
 
-      <div className=" commands-app">
-        {selectedSession && commands?.length != 0 ? (
-          <DataTable
-            title="Saved Commands"
-            columns={columns}
-            data={commands}
-            fixedHeader
-            pagination
-            conditionalRowStyles={conditionalRowStyles}
-          />
-        ) : (
-          <DataTable
-            title="New Commands"
-            columns={columns}
-            data={commands}
-            fixedHeader
-            pagination
-          />
-        )}
-      </div>
+      <div className="main-box">
+        <div className="commands-app">
+          {selectedSession && commands?.length != 0 ? (
+            <DataTable
+              title="Saved Commands"
+              columns={columns}
+              data={commands}
+              fixedHeader
+              // pagination
+              conditionalRowStyles={conditionalRowStyles}
+              fixedHeaderScrollHeight="350px"
+            />
+          ) : (
+            <DataTable
+              title="New Commands"
+              columns={columns}
+              data={commands}
+              fixedHeader
 
-      <button
-        hidden={!selectedSession}
-        className="send_button"
-        onClick={toggleTimer}
-      >
-        {timer ? "Stop move" : "Start move"}
-      </button>
-      {active ? `${timerIndex}` + " active" : "not-active"}
+              // pagination
+            />
+          )}
+          <button
+            hidden={!selectedSession}
+            className="btn-move"
+            onClick={toggleTimer}
+          >
+            {timer ? "Stop move" : "Start move"}
+          </button>
+          {active ? `${timerIndex}` + " active" : ""}
+        </div>
+        <div className="video-box">
+          <img src={tmpImage2} alt="Example" className="top-image" />
+          <div className="button-grid">
+            <button
+              onClick={() => handleMove("up")}
+              className="direction-button up"
+            >
+              ↑
+            </button>
+            <button
+              onClick={() => handleMove("left")}
+              className="direction-button left"
+            >
+              ←
+            </button>
+            <button
+              onClick={() => handleMove("stop")}
+              className="direction-button stop"
+            >
+              ⏹
+            </button>
+            <button
+              onClick={() => handleMove("right")}
+              className="direction-button right"
+            >
+              →
+            </button>
+            <button
+              onClick={() => handleMove("down")}
+              className="direction-button down"
+            >
+              ↓
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
