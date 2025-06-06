@@ -12,7 +12,7 @@ const items = [
     icon: <HomeOutlined />,
   },
   {
-    label: <Link to="/routes">My Routes</Link>,
+    label: <Link to="/routes">Settings</Link>,
     key: "routes",
     icon: <AppstoreOutlined />,
   },
@@ -28,7 +28,7 @@ const Header = ({ setAuth }) => {
     <div className="header-wrapper">
       <div className="header">
         <div className="proj_name">
-          <h2>Deminer manager</h2>
+          <h2>Platform manager</h2>
         </div>
         <Menu
           className="menu"
