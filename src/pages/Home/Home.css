@@ -47,10 +47,9 @@
 .btn-send {
   margin-top: 25px;
 }
-.btn-move{
-     margin: 15px;
-    padding: 10px;
-
+.btn-move {
+  margin: 15px;
+  padding: 10px;
 }
 
 .input-box {
@@ -58,29 +57,41 @@
   justify-content: space-between;
   width: 89%;
 }
-.video-box{
-    display: flex;
-  flex-direction: column;
+.action {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 50px 10px;
+}
+.video {
+  display: flex;
+  width: 45%;
+  height: 450px;
+}
+.video-btn-box {
+  display: flex;
+}
+.video-box {
+  display: flex;
+
   justify-content: flex-end;
-   border: 1px solid rgb(34, 104, 37);
+  border: 1px solid rgb(34, 104, 37);
   border-radius: 20px;
   padding: 10px 20px;
-  /* height: 80%; */
-  min-height: 450px;
-  width: 38%;
+  min-height: 35px;
+  width: 42%;
 }
-.main-box{
+.main-box {
   display: flex;
-   flex-direction: row;
-   width: 100%;
+  flex-direction: row;
+  width: 100%;
 }
 .commands-app {
-  max-height: 550px; 
+  max-height: 550px;
   overflow-y: auto;
-  width: 55%;
-  padding: 20px 10px 10px 0;
+  width: 50%;
+  padding: 20px 50px 10px 0;
 
-  .iKTLDi{
+  .iKTLDi {
     min-height: 37px;
   }
 }
@@ -157,7 +168,7 @@
   display: grid;
   justify-content: center;
   align-items: center;
-
+  margin-left: 70px;
 }
 
 .direction-button {
