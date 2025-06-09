@@ -11,7 +11,7 @@ const LoginSchema = Yup.object().shape({
 
 const LoginPage = ({ setAuth }) => {
   return (
-    <div>
+    <div className="main-box">
       <div className="container">
         <Formik
           validationSchema={LoginSchema}

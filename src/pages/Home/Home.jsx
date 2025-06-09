@@ -1,12 +1,10 @@
 import { number, string } from "yup";
 import "./Home.css";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button, Flex } from "antd";
 import DataTable from "react-data-table-component";
 import { Autocomplete, TextField } from "@mui/material";
-import Moment from "moment";
-import tmpImage from "../../assets/E109J2SK.avif";
-import tmpImage2 from "../../assets/E102H5XM.avif";
+import Checkbox from "@mui/material/Checkbox";
 
 import {
   get_all_sessions,
@@ -19,7 +17,9 @@ import {
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const HomePage = () => {
-  const [connect, setConnect] = useState(false);
+  const [connect, setConnected] = useState(false);
+  const [isVideoChecked, setVideoChecked] = useState(false);
+  const [urlVideo, setUrlVideo] = useState("");
   const [commands, setCommands] = useState([]);
 
   const [index, setIndex] = useState(10);
@@ -215,6 +215,16 @@ const HomePage = () => {
         setSessions([]);
       });
   }
+
+  const handleCheckedVideo = (e) => {
+    setVideoChecked(!isVideoChecked);
+
+    if (e.target.checked) {
+      setUrlVideo("http://vdykyi.ddns.net:8889/stream");
+    } else {
+      setUrlVideo("");
+    }
+  };
 
   const handleMove = (direction) => {
     console.log("Move:", direction);
@@ -436,8 +446,25 @@ const HomePage = () => {
               // pagination
             />
           )}
+        </div>
+
+        <div className="video">
+          <iframe
+            src={urlVideo}
+            scrolling="no"
+            style={{
+              width: "100%",
+              borderRadius: "12px",
+              boxShadow: "0 0 10px rgba(0, 0, 0, 0.3)",
+            }}
+          ></iframe>
+        </div>
+      </div>
+      <div className="action">
+        <div>
+          {" "}
           <button
-            hidden={!selectedSession}
+            disabled={!selectedSession}
             className="btn-move"
             onClick={toggleTimer}
           >
@@ -445,8 +472,15 @@ const HomePage = () => {
           </button>
           {active ? `${timerIndex}` + " active" : ""}
         </div>
-        <div className="video-box">
-          <img src={tmpImage2} alt="Example" className="top-image" />
+        <div className="video-btn-box">
+          <div className="flax justin-center " style={{ marginTop: 10 }}>
+            <Checkbox
+              checked={isVideoChecked}
+              onChange={handleCheckedVideo}
+            ></Checkbox>
+            <label>{isVideoChecked ? "Turn off video" : "Start video"}</label>
+          </div>
+
           <div className="button-grid">
             <button
               onClick={() => handleMove("up")}
