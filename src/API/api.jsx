@@ -84,3 +84,14 @@ export const delete_request = async (id) => {
     console.error(error);
   }
 };
+
+export const setActive_request = async (id) => {
+  try {
+    const response = await axios.post(`${ItemsBaseURL}/commands/set-active`, {
+      id: id,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

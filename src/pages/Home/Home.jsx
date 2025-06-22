@@ -49,6 +49,7 @@ const HomePage = () => {
   const [timer, setTimer] = useState();
   const [defaultIndexes, setDefaultIndexes] = useState([]);
   const [timerIndex, setTimerIndex] = useState();
+  const [activeCommand, setActiveCommand] = useState();
 
   const toggleTimer = () => {
     if (timer) {
@@ -61,17 +62,31 @@ const HomePage = () => {
 
       let counter = 0;
       let index = defaultIndexes[counter];
+      let commandActive = commands.find((com) => com.index === index);
+      let intervalTime = commandActive.duration * 1000;
+
       setTimerIndex(index);
 
       const timerId = setInterval(() => {
-        index = defaultIndexes[counter];
-        setTimerIndex(index);
         if (counter === defaultIndexes?.length - 1) {
           counter = 0;
+          clearInterval(timerId);
+          setTimer(undefined);
+          setActive(false);
+          setTimerIndex(null);
         } else {
+          index = defaultIndexes[counter];
+          if (counter > 0) {
+            commandActive = commands.find((com) => com.index === index);
+            intervalTime = commandActive.duration * 1000;
+          }
+
+          setTimerIndex(index);
+
           counter++;
         }
-      }, 1000);
+      }, 10000); //  intervalTime // commandActive.duration * 1000);
+
       setTimer(timerId);
     }
   };
@@ -177,7 +192,7 @@ const HomePage = () => {
 
   const handleUpdate = (e) => {
     if (selectedSession) {
-      setIsUpdate(false);
+      // setIsUpdate(false);
     }
     setFormData(e);
   };
@@ -246,13 +261,13 @@ const HomePage = () => {
       selector: (row) => row.angle,
     },
     {
-      name: "Duration",
+      name: "Duration sec.",
       selector: (row) => row.duration,
     },
-    {
-      name: "Distance",
-      selector: (row) => row.distance,
-    },
+    // {
+    //   name: "Distance",
+    //   selector: (row) => row.distance,
+    // },
     {
       name: "Action",
       cell: (row) => (
@@ -344,7 +359,7 @@ const HomePage = () => {
               ></input>
             </div>
             <div className="input-item">
-              <label>Duration</label>
+              <label>Duration sec.</label>
               <input
                 placeholder="Duration.."
                 type="number"
@@ -356,6 +371,7 @@ const HomePage = () => {
             <div className="input-item">
               <label>Distance</label>
               <input
+                disabled="true"
                 placeholder="Distance.."
                 type="number"
                 name="distance"
@@ -414,6 +430,12 @@ const HomePage = () => {
               setDefaultIndexes([]);
               formData.index = 10;
               formDataName.name = "";
+
+              // clearInterval timer
+              clearInterval(timer);
+              setTimer(undefined);
+              setActive(false);
+              setTimerIndex(null);
             }
           }}
           getOptionLabel={(option) => option.name}
@@ -470,7 +492,8 @@ const HomePage = () => {
           >
             {timer ? "Stop move" : "Start move"}
           </button>
-          {active ? `${timerIndex}` + " active" : ""}
+          {active ? `${timerIndex} - ` + `${timer}` + " active" : ""}
+          {/* {active ? `${timerIndex}` + " active" : ""} */}
         </div>
         <div className="video-btn-box">
           <div className="flax justin-center " style={{ marginTop: 10 }}>
