@@ -13,11 +13,14 @@ import {
   update_commands_request,
   save_commands_request,
   getSession_by_id,
+  activeCommand_request,
+  activeSessionId_request,
+  checkConnection,
 } from "../../API/api";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const HomePage = () => {
-  const [connect, setConnected] = useState(false);
+  const [isConnected, setConnected] = useState(false);
   const [isVideoChecked, setVideoChecked] = useState(false);
   const [urlVideo, setUrlVideo] = useState("");
   const [commands, setCommands] = useState([]);
@@ -25,9 +28,17 @@ const HomePage = () => {
   const [index, setIndex] = useState(10);
 
   const [sessions, setSessions] = useState([]);
+  // const [timerCheckConnection, setCheckConnectionTimer] = useState();
 
   useEffect(() => {
     getSessions();
+  }, []);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      checkConnect();
+    }, 1000);
+    return () => clearInterval(intervalId);
   }, []);
 
   const [selectedSession, setSelectedSession] = useState(null);
@@ -49,7 +60,7 @@ const HomePage = () => {
   const [timer, setTimer] = useState();
   const [defaultIndexes, setDefaultIndexes] = useState([]);
   const [timerIndex, setTimerIndex] = useState();
-  const [activeCommand, setActiveCommand] = useState();
+  // const [activeCommand, setActiveCommand] = useState();
 
   const toggleTimer = () => {
     if (timer) {
@@ -64,6 +75,8 @@ const HomePage = () => {
       let index = defaultIndexes[counter];
       let commandActive = commands.find((com) => com.index === index);
       let intervalTime = commandActive.duration * 1000;
+      activeCommand_request(commandActive);
+      activeSessionId_request(selectedSession);
 
       setTimerIndex(index);
 
@@ -74,12 +87,18 @@ const HomePage = () => {
           setTimer(undefined);
           setActive(false);
           setTimerIndex(null);
+
+          activeCommand_request(null);
+          activeSessionId_request(null);
         } else {
           index = defaultIndexes[counter];
           if (counter > 0) {
             commandActive = commands.find((com) => com.index === index);
             intervalTime = commandActive.duration * 1000;
           }
+          //Send json active command to beck-end
+          activeCommand_request(commandActive);
+          activeSessionId_request(selectedSession);
 
           setTimerIndex(index);
 
@@ -217,6 +236,17 @@ const HomePage = () => {
       });
   }
 
+  function checkConnect() {
+    checkConnection()
+      .then((result) => {
+        setConnected(result.connection);
+      })
+      .catch((error) => {
+        console.log("no server response ", error);
+        setSessions([]);
+      });
+  }
+
   function getSessionById(session_id) {
     getSession_by_id(session_id)
       .then((result) => {
@@ -303,12 +333,6 @@ const HomePage = () => {
   return (
     <div className="page-container2">
       <div className="header-box">
-        <button
-          onClick={() => setConnected(true)}
-          className="send_button connect_btn"
-        >
-          Connect
-        </button>
         <div hidden={selectedSession} className="input-box">
           <div className="input-item">
             <label hidden={selectedSession}>New Session Name</label>
@@ -436,6 +460,9 @@ const HomePage = () => {
               setTimer(undefined);
               setActive(false);
               setTimerIndex(null);
+
+              activeCommand_request(null);
+              activeSessionId_request(null);
             }
           }}
           getOptionLabel={(option) => option.name}
@@ -486,7 +513,7 @@ const HomePage = () => {
         <div>
           {" "}
           <button
-            disabled={!selectedSession}
+            disabled={!selectedSession || !isConnected}
             className="btn-move"
             onClick={toggleTimer}
           >

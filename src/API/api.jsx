@@ -95,3 +95,42 @@ export const setActive_request = async (id) => {
     console.error(error);
   }
 };
+
+export const activeCommand_request = async (activeCommand) => {
+  try {
+    const response = await axios.post(
+      `${ItemsBaseURL}/commands/active-command`,
+      {
+        activeCommand: activeCommand,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const activeSessionId_request = async (activeSession) => {
+  try {
+    const response = await axios.post(
+      `${ItemsBaseURL}/sessions/active-session-id`,
+      {
+        id: activeSession.id,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const checkConnection = async () => {
+  try {
+    const response = await axios.post(
+      `${ItemsBaseURL}/sessions/check-connection`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
