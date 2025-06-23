@@ -291,7 +291,7 @@ const HomePage = () => {
       selector: (row) => row.angle,
     },
     {
-      name: "Duration sec.",
+      name: "Duration ms.",
       selector: (row) => row.duration,
     },
     // {
@@ -383,7 +383,7 @@ const HomePage = () => {
               ></input>
             </div>
             <div className="input-item">
-              <label>Duration sec.</label>
+              <label>Duration ms.</label>
               <input
                 placeholder="Duration.."
                 type="number"
