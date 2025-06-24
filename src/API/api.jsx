@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const ItemsBaseURL = "http://127.0.0.1:5000";
+export const ItemsBaseURL = "http://127.0.0.1:5606";
 
 export const login_request = async ({ email, password }, callback) => {
   axios
@@ -110,12 +110,23 @@ export const activeCommand_request = async (activeCommand) => {
   }
 };
 
-export const activeSessionId_request = async (activeSession) => {
+export const getActiveCmdIndex = async () => {
+  try {
+    const response = await axios.post(
+      `${ItemsBaseURL}/sessions/get-active-cmd`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const activeSessionId_request = async (id) => {
   try {
     const response = await axios.post(
       `${ItemsBaseURL}/sessions/active-session-id`,
       {
-        id: activeSession.id,
+        id: id,
       }
     );
     return response.data;

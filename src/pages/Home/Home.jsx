@@ -16,6 +16,7 @@ import {
   activeCommand_request,
   activeSessionId_request,
   checkConnection,
+  getActiveCmdIndex
 } from "../../API/api";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
@@ -28,18 +29,17 @@ const HomePage = () => {
   const [index, setIndex] = useState(10);
 
   const [sessions, setSessions] = useState([]);
-  // const [timerCheckConnection, setCheckConnectionTimer] = useState();
 
   useEffect(() => {
     getSessions();
   }, []);
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      checkConnect();
-    }, 1000);
-    return () => clearInterval(intervalId);
-  }, []);
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     checkConnect();
+  //   }, 1000);
+  //   return () => clearInterval(intervalId);
+  // }, []);
 
   const [selectedSession, setSelectedSession] = useState(null);
 
@@ -68,43 +68,26 @@ const HomePage = () => {
       setTimer(undefined);
       setActive(false);
       setTimerIndex(null);
+      activeSessionId_request(0);
     } else {
-      setActive(true);
+      setActive(true); 
+      activeSessionId_request(selectedSession.id)
 
-      let counter = 0;
-      let index = defaultIndexes[counter];
-      let commandActive = commands.find((com) => com.index === index);
-      let intervalTime = commandActive.duration * 1000;
-      activeCommand_request(commandActive);
-      activeSessionId_request(selectedSession);
+      let index = -1;
 
-      setTimerIndex(index);
-
+      // Start timer
       const timerId = setInterval(() => {
-        if (counter === defaultIndexes?.length - 1) {
-          counter = 0;
-          clearInterval(timerId);
-          setTimer(undefined);
-          setActive(false);
-          setTimerIndex(null);
 
-          activeCommand_request(null);
-          activeSessionId_request(null);
-        } else {
-          index = defaultIndexes[counter];
-          if (counter > 0) {
-            commandActive = commands.find((com) => com.index === index);
-            intervalTime = commandActive.duration * 1000;
-          }
-          //Send json active command to beck-end
-          activeCommand_request(commandActive);
-          activeSessionId_request(selectedSession);
-
-          setTimerIndex(index);
-
-          counter++;
-        }
-      }, 10000); //  intervalTime // commandActive.duration * 1000);
+       getActiveCmdIndex()
+        .then((result) => {
+          setTimerIndex(result.index);
+        })
+        .catch((error) => {
+          console.log("no server response ", error);
+          setSessions([]);
+        });
+      
+      }, 70);
 
       setTimer(timerId);
     }
@@ -240,6 +223,18 @@ const HomePage = () => {
     checkConnection()
       .then((result) => {
         setConnected(result.connection);
+      })
+      .catch((error) => {
+        console.log("no server response ", error);
+        setSessions([]);
+      });
+  }
+
+  function getActiveIndex() {
+    getActiveCmdIndex()
+      .then((result) => {
+    
+        return result;
       })
       .catch((error) => {
         console.log("no server response ", error);
@@ -462,7 +457,7 @@ const HomePage = () => {
               setTimerIndex(null);
 
               activeCommand_request(null);
-              activeSessionId_request(null);
+              activeSessionId_request(0);
             }
           }}
           getOptionLabel={(option) => option.name}
