@@ -16,7 +16,8 @@ import {
   activeCommand_request,
   activeSessionId_request,
   checkConnection,
-  getActiveCmdIndex
+  getActiveCmdIndex,
+  cameraPosition
 } from "../../API/api";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
@@ -34,12 +35,12 @@ const HomePage = () => {
     getSessions();
   }, []);
 
-  // useEffect(() => {
-  //   const intervalId = setInterval(() => {
-  //     checkConnect();
-  //   }, 1000);
-  //   return () => clearInterval(intervalId);
-  // }, []);
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      checkConnect();
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   const [selectedSession, setSelectedSession] = useState(null);
 
@@ -67,27 +68,47 @@ const HomePage = () => {
       clearInterval(timer);
       setTimer(undefined);
       setActive(false);
-      setTimerIndex(null);
+      setTimerIndex(null)
       activeSessionId_request(0);
     } else {
-      setActive(true); 
+      setTimerIndex(10)
+
+      //setActive(true); 
       activeSessionId_request(selectedSession.id)
-
-      let index = -1;
-
+      let isFirstCmd = true;
       // Start timer
       const timerId = setInterval(() => {
 
        getActiveCmdIndex()
         .then((result) => {
-          setTimerIndex(result.index);
+          console.log("isFirstCmd --->", isFirstCmd);
+          if (isFirstCmd) {
+            setActive(true);
+            setTimerIndex(result.index);
+            isFirstCmd = false;
+          } else if (!result.isSessionActive) {
+            console.log("===================!!!==========")
+            // toggleTimer();
+            clearInterval(timerId);
+            setTimer(undefined);
+            setActive(false);
+            setTimerIndex(null)
+            activeSessionId_request(0);
+          } else {
+            setTimerIndex(result.index);
+          }
+
+          console.log("isFirstCmd --->", isFirstCmd);
+          console.log("result.isSessionActive --->", result.isSessionActive);
+          console.log("=====================");
+
         })
         .catch((error) => {
           console.log("no server response ", error);
           setSessions([]);
         });
       
-      }, 70);
+      }, 250);
 
       setTimer(timerId);
     }
@@ -266,9 +287,19 @@ const HomePage = () => {
     }
   };
 
-  const handleMove = (direction) => {
-    console.log("Move:", direction);
-    // Додай тут свою логіку руху
+  const handleCameraMovePress = (direction) => {
+    console.log("Camera move btn pressed:", direction);
+    cameraPosition("pressed", direction)
+  };
+
+  const handleCameraMoveRelease = (direction) => {
+    console.log("Camera move btn released:", direction);
+    cameraPosition("released", direction)
+  };
+
+  const handleCameraPosReset = () => {
+    console.log("Camera position reset:");
+    cameraPosition("reset", "")
   };
 
   const columns = [
@@ -317,7 +348,7 @@ const HomePage = () => {
 
   const conditionalRowStyles = [
     {
-      when: (row) => row.index === timerIndex,
+      when: (row) => row.index === timerIndex && active,
       style: {
         backgroundColor: "green",
         userSelect: "none",
@@ -528,31 +559,43 @@ const HomePage = () => {
 
           <div className="button-grid">
             <button
-              onClick={() => handleMove("up")}
+              onMouseDown={() => handleCameraMovePress("up")}
+              onMouseUp={() => handleCameraMoveRelease("up")}
+              onTouchStart={() => handleCameraMovePress("up")}
+              onTouchEnd={() => handleCameraMoveRelease("up")}
               className="direction-button up"
             >
               ↑
             </button>
             <button
-              onClick={() => handleMove("left")}
+              onMouseDown={() => handleCameraMovePress("left")}
+              onMouseUp={() => handleCameraMoveRelease("left")}
+              onTouchStart={() => handleCameraMovePress("left")}
+              onTouchEnd={() => handleCameraMoveRelease("left")}
               className="direction-button left"
             >
               ←
             </button>
             <button
-              onClick={() => handleMove("stop")}
+              onClick={() => handleCameraPosReset()}
               className="direction-button stop"
             >
               ⏹
             </button>
             <button
-              onClick={() => handleMove("right")}
+              onMouseDown={() => handleCameraMovePress("right")}
+              onMouseUp={() => handleCameraMoveRelease("right")}
+              onTouchStart={() => handleCameraMovePress("right")}
+              onTouchEnd={() => handleCameraMoveRelease("right")}
               className="direction-button right"
             >
               →
             </button>
             <button
-              onClick={() => handleMove("down")}
+              onMouseDown={() => handleCameraMovePress("down")}
+              onMouseUp={() => handleCameraMoveRelease("down")}
+              onTouchStart={() => handleCameraMovePress("down")}
+              onTouchEnd={() => handleCameraMoveRelease("down")}
               className="direction-button down"
             >
               ↓

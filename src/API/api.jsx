@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const ItemsBaseURL = "http://127.0.0.1:5606";
+export const ItemsBaseURL = "http://yulia-rpi5.ddns.net:5606";
 
 export const login_request = async ({ email, password }, callback) => {
   axios
@@ -139,6 +139,21 @@ export const checkConnection = async () => {
   try {
     const response = await axios.post(
       `${ItemsBaseURL}/sessions/check-connection`
+    );
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const cameraPosition = async (action, dir) => {
+  try {
+    const response = await axios.post(
+      `${ItemsBaseURL}/sessions/camera-position`,
+      {
+        action: action,
+        dir: dir
+      }
     );
     return response.data;
   } catch (error) {
